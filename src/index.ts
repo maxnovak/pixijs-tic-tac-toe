@@ -1,35 +1,71 @@
 import { Application, Container, FederatedPointerEvent, Sprite } from 'pixi.js'
 
+const Symbols = {
+	NOTHING: 0,
+	X: 1,
+	O: 2,
+}
+
 const app = new Application({
 	view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
 	resolution: window.devicePixelRatio || 1,
-	autoDensity: true,
-	backgroundColor: 0x6495ed,
-	width: 640,
-	height: 480
+	// autoDensity: true,
+	backgroundColor: '#FFFFFF',
+	antialias: true,
+	width: 900,
 });
 
-const onClick = (_: FederatedPointerEvent): void => {
-	tintImage(0);
-}
+let turn = Symbols.X;
 
-const tintImage = (index: number) => {
-	setTimeout(() => {
-		clampy.tint = 0xFFFFFF - index;
-		if (index < 255) {
-			tintImage(index+1)
-		}
-	}, 20);
+let grid = [
+	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
+	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
+	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
+];
+
+const onClick = (e: FederatedPointerEvent): void => {
+	const x = getXLocation(e.screenX);
+	const y = getYLocation(e.screenY);
+
+	// Null safety is to allow getters to return -1
+	if (grid[y]?.[x] === Symbols.NOTHING) {
+		grid[y][x] = turn;
+	}
+
+	console.log(grid);
 }
 
 const container = new Container();
-container.x = 400;
-container.y = 0;
 app.stage.addChild(container);
 
-const clampy = Sprite.from("clampy.png");
-clampy.x = -300;
-clampy.y = 100;
-container.addChild(clampy);
-clampy.on("pointertap", onClick)
-clampy.interactive = true;
+const board = Sprite.from("board.png");
+container.addChild(board);
+board.on("pointertap", onClick)
+board.interactive = true;
+
+
+const getXLocation = (x: number): number => {
+	if (x > 150 && x < 350) {
+		return 0;
+	}
+	if (x > 360 && x < 635) {
+		return 1;
+	}
+	if (x > 640 && x < 830) {
+		return 2;
+	}
+	return -1;
+}
+
+const getYLocation = (y: number): number => {
+	if (y > 20 && y < 130) {
+		return 0;
+	}
+	if (y > 150 && y < 325) {
+		return 1;
+	}
+	if (y > 350 && y < 490) {
+		return 2;
+	}
+	return -1;
+}
