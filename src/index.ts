@@ -1,4 +1,4 @@
-import { Application, Container, FederatedPointerEvent, ObservablePoint, Sprite } from 'pixi.js'
+import { Application, Container, FederatedPointerEvent, ObservablePoint, Sprite, Text, TextStyle } from 'pixi.js'
 import { getXLocation, getYLocation } from './utils';
 
 const Symbols = {
@@ -28,6 +28,12 @@ let location = [
 	[[238,252],[481,236],[751,229]],
 	[[274,444],[494,434],[764,421]],
 ];
+const textStyle = new TextStyle({
+	align: "center",
+	fill: '#000000',
+	fontSize: 42,
+	fontFamily: "Georgia, serif",
+})
 
 
 const onClick = (e: FederatedPointerEvent): void => {
@@ -40,10 +46,16 @@ const onClick = (e: FederatedPointerEvent): void => {
 		let move: Sprite;
 		if (turn === Symbols.X) {
 			move = Sprite.from("x.png");
-			console.log(checkWinX(x,y));
+			if (checkWinX(x,y)) {
+				const text = new Text('X Wins!', textStyle);
+				app.stage.addChild(text);
+			}
 		} else if (turn === Symbols.O) {
 			move = Sprite.from("o.png");
-			console.log(checkWinY(x,y));
+			if (checkWinY(x,y)) {
+				const text = new Text('O Wins!', textStyle);
+				app.stage.addChild(text);
+			}
 		} else {
 			return;
 		}
