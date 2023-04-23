@@ -1,4 +1,5 @@
 import { Application, Container, FederatedPointerEvent, ObservablePoint, Sprite, Text, TextStyle } from 'pixi.js'
+import { Sound } from "@pixi/sound";
 import { getXLocation, getYLocation } from './utils';
 
 const Symbols = {
@@ -15,6 +16,15 @@ const app = new Application({
 	antialias: true,
 	width: 900,
 });
+
+const backgroundMusic = Sound.from({
+	url: "forest-lullaby-110624.mp3",
+	preload: true,
+	autoPlay: true,
+	loop: true,
+	volume: 0.2,
+});
+backgroundMusic.play();
 
 let turn = Symbols.X;
 
