@@ -1,12 +1,7 @@
-import { Application, Container, FederatedPointerEvent, ObservablePoint, Sprite, Text, TextStyle } from 'pixi.js'
+import { Application, Container, FederatedPointerEvent, ObservablePoint, Sprite, Text } from 'pixi.js'
 import { Sound } from "@pixi/sound";
-import { getXLocation, getYLocation } from './utils';
-
-const Symbols = {
-	NOTHING: 0,
-	X: 1,
-	O: 2,
-}
+import { getXLocation, getYLocation, swapTurns } from './utils';
+import { Symbols, textStyle } from './constants';
 
 const app = new Application({
 	view: document.getElementById("pixi-canvas") as HTMLCanvasElement,
@@ -33,18 +28,11 @@ let grid = [
 	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
 	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
 ];
-let location = [
+const location = [
 	[[237,85],[498,84],[730,74]],
 	[[238,252],[481,236],[751,229]],
 	[[274,444],[494,434],[764,421]],
 ];
-const textStyle = new TextStyle({
-	align: "center",
-	fill: '#000000',
-	fontSize: 42,
-	fontFamily: "Georgia, serif",
-})
-
 
 const onClick = (e: FederatedPointerEvent): void => {
 	const x = getXLocation(e.screenX);
@@ -79,8 +67,8 @@ const onClick = (e: FederatedPointerEvent): void => {
 			url: `tile_placement_sounds/tile_placement-${tileSoundNumber}.wav`,
 		});
 		tilePlace.play();
+		turn = swapTurns(turn);
 	}
-	swapTurns();
 	
 }
 
@@ -123,15 +111,4 @@ const checkWinY = (x: number, y: number): boolean => {
 		return true;
 	}
 	return false;
-}
-
-const swapTurns = () => {
-	if (turn === Symbols.X) {
-		turn = Symbols.O;
-		return;
-	}
-	if (turn === Symbols.O) {
-		turn = Symbols.X;
-		return;
-	}
 }

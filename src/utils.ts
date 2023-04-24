@@ -1,3 +1,5 @@
+import { Symbols } from "./constants";
+
 export const getXLocation = (x: number): number => {
 	if (x > 150 && x < 350) {
 		return 0;
@@ -9,7 +11,7 @@ export const getXLocation = (x: number): number => {
 		return 2;
 	}
 	return -1;
-}
+};
 
 export const getYLocation = (y: number): number => {
 	if (y > 20 && y < 130) {
@@ -22,4 +24,14 @@ export const getYLocation = (y: number): number => {
 		return 2;
 	}
 	return -1;
-}
+};
+
+export const swapTurns = (turn: number): number => {
+	if (turn === Symbols.X) {
+		return Symbols.O;
+	}
+	if (turn === Symbols.O) {
+		return Symbols.X;
+	}
+	return Symbols.NOTHING;
+};
