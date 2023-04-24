@@ -22,7 +22,7 @@ const backgroundMusic = Sound.from({
 backgroundMusic.play();
 
 let turn = Symbols.X;
-
+let gameOver = false;
 let grid = [
 	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
 	[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
@@ -34,10 +34,19 @@ const location = [
 	[[274,444],[494,434],[764,421]],
 ];
 
-const onClick = (e: FederatedPointerEvent): void => {
+const container = new Container();
+app.stage.addChild(container);
+
+const board = Sprite.from("board.png");
+container.addChild(board);
+
+const addPiece = (e: FederatedPointerEvent): void => {
+	if (gameOver) {
+		return;
+	}
+
 	const x = getXLocation(e.screenX);
 	const y = getYLocation(e.screenY);
-
 	// Null safety is to allow getters to return -1
 	if (grid[y]?.[x] === Symbols.NOTHING) {
 		grid[y][x] = turn;
@@ -46,40 +55,46 @@ const onClick = (e: FederatedPointerEvent): void => {
 			move = Sprite.from("x.png");
 			if (checkWinX(x,y)) {
 				const text = new Text('X Wins!', textStyle);
-				app.stage.addChild(text);
+				container.addChild(text);
+				gameOver = true;
 			}
 		} else if (turn === Symbols.O) {
 			move = Sprite.from("o.png");
 			if (checkWinY(x,y)) {
 				const text = new Text('O Wins!', textStyle);
-				app.stage.addChild(text);
+				container.addChild(text);
+				gameOver = true;
 			}
 		} else {
+			console.error('something done broked');
 			return;
 		}
 		move.x = location[y][x][0] - 50 + Math.random() * 30;
 		move.y = location[y][x][1] - 75 + Math.random() * 30;
 		move.scale = new ObservablePoint(()=>{}, null, 0.25, 0.25);
-		app.stage.addChild(move);
+		container.addChild(move);
 
-		const tileSoundNumber = Math.floor(Math.random() * 12 + 1);
+		const tileSoundNumber = Math.floor(Math.random() * 10 + 1);
 		const tilePlace = Sound.from({
 			url: `tile_placement_sounds/tile_placement-${tileSoundNumber}.wav`,
 		});
 		tilePlace.play();
+
+		if (gameOver) {
+			const text = new Text('Play again?', textStyle);
+			text.y = 500;
+			text.on("pointertap", startOver)
+			text.interactive = true;
+			container.addChild(text);
+		}
+
 		turn = swapTurns(turn);
 	}
 	
 }
 
-const container = new Container();
-app.stage.addChild(container);
-
-const board = Sprite.from("board.png");
-container.addChild(board);
-board.on("pointertap", onClick)
+board.on("pointertap", addPiece)
 board.interactive = true;
-
 
 let xRow = [0,0,0];
 let xColumn =[0,0,0];
@@ -111,4 +126,22 @@ const checkWinY = (x: number, y: number): boolean => {
 		return true;
 	}
 	return false;
+}
+
+const startOver = () => {
+	grid = [
+		[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
+		[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
+		[Symbols.NOTHING,Symbols.NOTHING,Symbols.NOTHING],
+	];
+	container.removeChildren(1,container.children.length);
+	gameOver = false;
+	xRow = [0,0,0];
+	xColumn =[0,0,0];
+	xLeftDiagonal = 0;
+	xRightDiagonal = 0;
+	yRow = [0,0,0];
+	yColumn =[0,0,0];
+	yLeftDiagonal = 0;
+	yRightDiagonal = 0;
 }
