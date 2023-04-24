@@ -22,7 +22,7 @@ const backgroundMusic = Sound.from({
 	preload: true,
 	autoPlay: true,
 	loop: true,
-	volume: 0.2,
+	volume: 0.05,
 });
 backgroundMusic.play();
 
@@ -73,7 +73,12 @@ const onClick = (e: FederatedPointerEvent): void => {
 		move.y = location[y][x][1] - 75 + Math.random() * 30;
 		move.scale = new ObservablePoint(()=>{}, null, 0.25, 0.25);
 		app.stage.addChild(move);
-		console.log(move);
+
+		const tileSoundNumber = Math.floor(Math.random() * 12 + 1);
+		const tilePlace = Sound.from({
+			url: `tile_placement_sounds/tile_placement-${tileSoundNumber}.wav`,
+		});
+		tilePlace.play();
 	}
 	swapTurns();
 	
